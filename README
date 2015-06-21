@@ -3,3 +3,16 @@ How Do Python Coroutines Work?
 
 Script for live-coding an implementation of Python async coroutines
 analogous to asyncio.coroutine in the Python 3.4 standard library.
+
+tornado.gen.coroutine is an earlier inspiration for the same idea.
+
+The example program is a "web crawler" that fetches only two URLs.
+Files are named in order.
+
+10. The first version does a blocking fetch of the two URLs, one at a time.
+20. Then it puts its sockets in non-blocking mode and uses an event loop and
+    callbacks to connect asynchronously. Still fetches serially.
+30. Add more callbacks to fetch asynchronously.
+40. Add a "Future" to abstract callbacks.
+50. Introduce "Task" and replace callbacks with generators. The combination
+    of Task, Future, and generators is a coroutine implementation.
