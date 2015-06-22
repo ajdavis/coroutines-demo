@@ -39,12 +39,15 @@ def connected(s, path):
 
 def readable(s, buf):
     global n_jobs
+    selector.unregister(s.fileno())
     chunk = s.recv(1000)
     if chunk:
         buf.append(chunk)
+        f = Future()
+        f.callbacks.append(lambda: readable(s, buf))
+        selector.register(s.fileno(), EVENT_READ, f)
     else:
         # Finished.
-        selector.unregister(s.fileno())
         s.close()
         print((b''.join(buf)).decode())
         n_jobs -= 1
