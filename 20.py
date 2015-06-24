@@ -11,32 +11,32 @@ def get(path):
     s = socket.socket()
     s.setblocking(False)
     try:
-        s.connect(('emptysqua.re', 80))
+        s.connect(('localhost', 5000))
     except BlockingIOError:
         pass
     selector.register(s.fileno(), EVENT_WRITE, lambda: connected(s, path))
 
 def connected(s, path):
     global n_jobs
-    s.send(('GET %s HTTP/1.0\r\nHost: emptysqua.re\r\n\r\n' % path).encode())
+    s.send(('GET %s HTTP/1.0\r\n\r\n' % path).encode())
 
-    buf = b''
+    buf = []
     while True:
         try:
             chunk = s.recv(1000)
             if not chunk:
                 break
-            buf += chunk
+            buf.append(chunk)
         except OSError:
             pass
 
     s.close()
-    print(buf.decode())
+    print((b''.join(buf)).decode().split('\n')[0])
     n_jobs -= 1
 
 start = time.time()
-get('/blog/')
-get('/blog/open-source-bridge/')
+get('/foo')
+get('/bar')
 
 while n_jobs:
     events = selector.select()

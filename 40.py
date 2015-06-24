@@ -21,7 +21,7 @@ def get(path):
     s = socket.socket()
     s.setblocking(False)
     try:
-        s.connect(('emptysqua.re', 80))
+        s.connect(('localhost', 5000))
     except BlockingIOError:
         pass
 
@@ -31,7 +31,7 @@ def get(path):
 
 def connected(s, path):
     selector.unregister(s.fileno())
-    s.send(('GET %s HTTP/1.0\r\nHost: emptysqua.re\r\n\r\n' % path).encode())
+    s.send(('GET %s HTTP/1.0\r\n\r\n' % path).encode())
     buf = []
     f = Future()
     f.callbacks.append(lambda: readable(s, buf))
@@ -49,12 +49,12 @@ def readable(s, buf):
     else:
         # Finished.
         s.close()
-        print((b''.join(buf)).decode())
+        print((b''.join(buf)).decode().split('\n')[0])
         n_jobs -= 1
 
 start = time.time()
-get('/blog/')
-get('/blog/open-source-bridge/')
+get('/foo')
+get('/bar')
 
 while n_jobs:
     events = selector.select()

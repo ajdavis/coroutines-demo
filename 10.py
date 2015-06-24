@@ -3,8 +3,8 @@ import time
 
 def get(path):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('emptysqua.re', 80))
-    s.send(('GET %s HTTP/1.0\r\nHost: emptysqua.re\r\n\r\n' % path).encode())
+    s.connect(('localhost', 5000))
+    s.send(('GET %s HTTP/1.0\r\n\r\n' % path).encode())
 
     buf = []
     while True:
@@ -14,9 +14,9 @@ def get(path):
         buf.append(chunk)
 
     s.close()
-    print((b''.join(buf)).decode())
+    print((b''.join(buf)).decode().split('\n')[0])
 
 start = time.time()
-get('/blog/')
-get('/blog/open-source-bridge/')
+get('/foo')
+get('/bar')
 print('took %.2f seconds' % (time.time() - start))
