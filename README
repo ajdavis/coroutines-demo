@@ -22,3 +22,12 @@ Files are named in order.
 To run the examples, first start server.py in a separate terminal session.
 (It requires Flask.) server.py is designed to be slow - each URL takes about
 a second to download. This provides a good example of async's strength suit.
+
+The material for this demo is adapted from a chapter I wrote with Guido van
+Rossum for an upcoming book in the Architecture of Open Source Applications
+series:
+
+https://github.com/aosabook/500lines/blob/master/crawler/chapter.md
+
+The chapter presents a far more sophisticated code example than is demo'ed
+here, and covers the relevant ideas in much greater depth and detail.
