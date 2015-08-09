@@ -1,4 +1,3 @@
-from itertools import zip_longest
 from time import sleep
 
 from flask import Flask, Response
