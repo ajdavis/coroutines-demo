@@ -6,8 +6,8 @@ from flask import Flask, Response
 app = Flask(__name__)
 
 
-message = b'Hello PyGotham 2015! ' * 2000 + b'\n'
-CHUNK_LEN = 2000
+message = b'Hello PyGotham 2015! ' * 100 + b'\n'
+CHUNK_LEN = 100
 N_CHUNKS = len(message) / CHUNK_LEN
 
 @app.route("/foo")
