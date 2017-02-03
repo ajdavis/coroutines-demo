@@ -6,7 +6,7 @@ from flask import Flask, Response
 app = Flask(__name__)
 
 
-message = b'Hello DeveloperWeek 2016! ' * 100 + b'\n'
+message = b'Hello PyTennessee! ' * 100 + b'\n'
 CHUNK_LEN = 100
 N_CHUNKS = len(message) / CHUNK_LEN
 
@@ -19,7 +19,7 @@ def hello():
             chunk = message[i:i + CHUNK_LEN]
             if chunk:
                 yield chunk
-                sleep(0.85 / N_CHUNKS)
+                sleep(0.877 / N_CHUNKS)
                 i += CHUNK_LEN
             else:
                 break
