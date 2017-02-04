@@ -7,13 +7,13 @@ n_jobs = 0
 
 class Future:
     def __init__(self):
-        self.callbacks = []
+        self.callback = None
 
     def resolve(self):
-        callbacks = self.callbacks
-        self.callbacks = []
-        for fn in callbacks:
-            fn()
+        self.callback()
+
+    def __await__(self):
+        yield self
 
 class Task:
     def __init__(self, coro):
@@ -22,13 +22,13 @@ class Task:
 
     def step(self):
         try:
-            next_future = next(self.coro)
+            f = self.coro.send(None)
         except StopIteration:
             return
 
-        next_future.callbacks.append(self.step)
+        f.callback = self.step
 
-def get(path):
+async def get(path):
     global n_jobs
     n_jobs += 1
     s = socket.socket()
@@ -40,17 +40,17 @@ def get(path):
 
     f = Future()
     selector.register(s.fileno(), EVENT_WRITE, f)
-    yield f
+    await f
     selector.unregister(s.fileno())
 
     s.send(('GET %s HTTP/1.0\r\n\r\n' % path).encode())
     buf = []
 
-    f = Future()
-    selector.register(s.fileno(), EVENT_READ, f)
-
     while True:
-        yield f
+        f = Future()
+        selector.register(s.fileno(), EVENT_READ, f)
+        await f
+        selector.unregister(s.fileno())
         chunk = s.recv(1000)
         if chunk:
             buf.append(chunk)
@@ -58,8 +58,6 @@ def get(path):
             break
 
     # Finished.
-    selector.unregister(s.fileno())
-    s.close()
     print((b''.join(buf)).decode().split('\n')[0])
     n_jobs -= 1
 

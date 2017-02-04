@@ -7,13 +7,10 @@ n_jobs = 0
 
 class Future:
     def __init__(self):
-        self.callbacks = []
+        self.callback = None
 
     def resolve(self):
-        callbacks = self.callbacks
-        self.callbacks = []
-        for fn in callbacks:
-            fn()
+        self.callback()
 
 def get(path):
     global n_jobs
@@ -26,7 +23,7 @@ def get(path):
         pass
 
     f = Future()
-    f.callbacks.append(lambda: connected(s, path))
+    f.callback = lambda: connected(s, path)
     selector.register(s.fileno(), EVENT_WRITE, f)
 
 def connected(s, path):
@@ -34,7 +31,7 @@ def connected(s, path):
     s.send(('GET %s HTTP/1.0\r\n\r\n' % path).encode())
     buf = []
     f = Future()
-    f.callbacks.append(lambda: readable(s, buf))
+    f.callback = lambda: readable(s, buf)
     selector.register(s.fileno(), EVENT_READ, f)
 
 def readable(s, buf):
@@ -44,7 +41,7 @@ def readable(s, buf):
     if chunk:
         buf.append(chunk)
         f = Future()
-        f.callbacks.append(lambda: readable(s, buf))
+        f.callback = lambda: readable(s, buf)
         selector.register(s.fileno(), EVENT_READ, f)
     else:
         # Finished.
